@@ -3,6 +3,8 @@ version: '3.2'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    networks:
+      - default_network
     volumes:
       - type: bind
         source: ./config/elasticsearch.yml
@@ -11,11 +13,8 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
-    ports:
-      - '9200:9200'
-      - '9300:9300'
     environment:
-      ES_JAVA_OPTS: '-Xmx256m -Xms256m'
+      ES_JAVA_OPTS: '-Xmx512m -Xms512m'
       ELASTIC_PASSWORD: changeme
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
@@ -23,6 +22,8 @@ services:
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.8.0
+    networks:
+      - default_network
     volumes:
       - type: bind
         source: ./config/logstash.yml
@@ -31,16 +32,8 @@ services:
 
       - type: bind
         source: ./config/logstash.conf
-        target: /etc/logstash/conf.d
+        target: /usr/share/logstash/pipeline/logstash.conf
         read_only: true
-      # - type: bind
-      #   source: ./logstash/pipeline
-      #   target: /usr/share/logstash/pipeline
-      #   read_only: true
-    ports:
-      - '5000:5000/tcp'
-      - '5000:5000/udp'
-      - '9600:9600'
     environment:
       LS_JAVA_OPTS: '-Xmx256m -Xms256m'
     depends_on:
@@ -48,6 +41,8 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.8.0
+    networks:
+      - default_network
     volumes:
       - type: bind
         source: ./config/kibana.yml
@@ -62,3 +57,8 @@ services:
 volumes:
   elasticsearch:
     driver: local
+
+networks:
+  default_network:
+    external:
+      name: default_network
