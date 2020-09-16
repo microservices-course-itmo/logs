@@ -8,6 +8,8 @@ network.host: 0.0.0.0
 ## X-Pack settings
 ## see https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-xpack.html
 #
-xpack.license.self_generated.type: trial
+xpack.license.self_generated.type: basic
 xpack.security.enabled: true
 xpack.monitoring.collection.enabled: true
+# In case of low disk space elastic mark cluster as read-only. By enabling this setting we allow to delete some of the data
+cluster.blocks.read_only_allow_delete: true
